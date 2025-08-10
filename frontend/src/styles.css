@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html, body, #root { height: 100%; }
+
+body { @apply bg-black text-gray-100 font-sans min-h-screen; }
+
+
+.btn {
+	@apply inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium shadow transition-all duration-150;
+}
+.btn-primary { @apply bg-brand-600 text-white hover:bg-brand-500 focus:ring-2 focus:ring-brand-400/40; }
+.btn-secondary { @apply bg-accent-800 text-gray-100 border border-accent-700 hover:bg-accent-700; }
+.input { @apply w-full rounded-md border border-accent-700 bg-accent-800 text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-gray-400; }
+.card { @apply rounded-xl bg-accent-900 shadow-sm ring-1 ring-accent-800 p-5; }
+.table-head { @apply bg-accent-900 text-gray-300; }
+.table-row { @apply border-t border-accent-800; }
+
+/* Utility for accent color (e.g. delete buttons) */
+.btn-accent {
+	@apply bg-gradient-to-br from-pink-500 via-red-400 to-orange-400 text-white hover:from-pink-600 hover:via-red-500 hover:to-orange-500 focus:ring-2 focus:ring-pink-200;
+}
+
+
