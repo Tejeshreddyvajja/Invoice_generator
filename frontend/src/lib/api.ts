@@ -1,6 +1,9 @@
 import { useAuth } from '../state/auth'
 
-export const API_BASE = '/api'
+// Use environment variable for production, fallback to /api for development
+export const API_BASE = import.meta.env.PROD 
+  ? (import.meta.env.VITE_API_URL || 'https://invoice-generator-kup7.onrender.com') + '/api'
+  : '/api'
 
 async function request(path: string, options: RequestInit = {}, token?: string | null) {
   const res = await fetch(`${API_BASE}${path}`, {
