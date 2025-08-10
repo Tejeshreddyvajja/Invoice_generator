@@ -1,9 +1,9 @@
 import { useAuth } from '../state/auth'
 
-// Use environment variable for production, fallback to /api for development
-export const API_BASE = import.meta.env.PROD 
-  ? (import.meta.env.VITE_API_URL || 'https://invoice-generator-kup7.onrender.com') + '/api'
-  : '/api'
+// API base resolves to VITE_API_URL + '/api' when set, otherwise '/api' (works with same-origin or Vite proxy)
+const envUrl = (import.meta as any).env?.VITE_API_URL as string | undefined
+const cleanedBase = envUrl ? envUrl.replace(/\/+$/, '') : ''
+export const API_BASE = `${cleanedBase}/api`
 
 async function request(path: string, options: RequestInit = {}, token?: string | null) {
   const res = await fetch(`${API_BASE}${path}`, {
