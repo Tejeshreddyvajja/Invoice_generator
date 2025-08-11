@@ -21,7 +21,7 @@ async function generateNextInvoiceNumber(userId) {
   return `${prefix}${String(seq).padStart(5, '0')}`;
 }
 
-router.post('/', auth, async (req, res) => {
+  router.post('/', auth, async (req, res) => {
   try {
     const { customerId, items = [], currency, notes, issueDate, dueDate } = req.body || {};
     if (!customerId || !Array.isArray(items) || items.length === 0) {
@@ -74,7 +74,35 @@ router.post('/', auth, async (req, res) => {
       total,
     });
 
-    return res.status(201).json({ invoice });
+    // Try to auto-generate PDF and email it to the customer if an email exists.
+    // This should not block invoice creation; failures are reported but do not change the 201 response.
+    let emailSent = false;
+    try {
+      if (customer?.email) {
+        const outDir = path.join(__dirname, '..', 'storage', 'invoices', String(req.user.userId));
+        const { filePath, fileName } = await generateInvoicePdf(
+          { invoice, customer, seller: user || (await User.findById(req.user.userId)) },
+          outDir
+        );
+        const subject = `Invoice ${invoice.invoiceNumber}`;
+        await sendInvoiceEmail({
+          to: customer.email,
+          subject,
+          text: `Please find attached invoice ${invoice.invoiceNumber}`,
+          html: `<p>Please find attached invoice <b>${invoice.invoiceNumber}</b>.</p>`,
+          attachments: [{ filename: fileName, path: filePath }],
+        });
+        // Mark as sent on successful email
+        invoice.status = 'sent';
+        await invoice.save();
+        emailSent = true;
+      }
+    } catch (e) {
+      // Intentionally swallow errors to avoid failing invoice creation
+      console.error('Auto email failed:', e?.message || e);
+    }
+
+    return res.status(201).json({ invoice, emailSent });
   } catch (err) {
     return res.status(500).json({ msg: 'Server error' });
   }

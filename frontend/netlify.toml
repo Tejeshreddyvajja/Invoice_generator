@@ -3,7 +3,7 @@
   command = "npm run build"
 
 [build.environment]
-  VITE_API_URL = "https://invoice-generator-kup7.onrender.com"
+  VITE_API_URL = "https://invoice-generator-5cs6.onrender.com"
 
 # Redirect all routes to index.html for single-page applications
 [[redirects]]

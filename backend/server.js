@@ -8,7 +8,19 @@ process.env.JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/invoice_generator';
 
 const app = express();
-app.use(cors());
+
+// CORS configuration to allow Authorization header from browsers
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+const corsOptions = {
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 mongoose.connect(MONGO_URI)
